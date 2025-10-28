@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { useEffect, useState } from "react";
 
 type Todo = {
-  id: number;
+  id: string;
   title: string;
   completed: boolean;
 };
@@ -52,6 +52,25 @@ export function App() {
     }
   };
 
+  const updateTodo = async (id: string, updatedFields: Partial<Todo>) => {
+    try {
+      const res = await fetch(`${API_URL}/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFields),
+      });
+
+      if (!res.ok) throw new Error("Failed to update todo");
+
+      const updatedTodo = await res.json();
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) => (todo.id === id ? updatedTodo : todo)),
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-4">
       <form onSubmit={addTodo}>
@@ -74,8 +93,10 @@ export function App() {
               <div
                 key={todo.id}
                 data-testid="todo-item"
-                className={clsx("relative flex items-start py-4")}
-                // todo.completed && "line-through",
+                className={clsx(
+                  "relative flex items-start py-4",
+                  todo.completed && "line-through",
+                )}
               >
                 <div className="min-w-0 flex-1 text-sm leading-6">
                   <label
@@ -90,6 +111,9 @@ export function App() {
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                     checked={todo.completed}
+                    onChange={() =>
+                      updateTodo(todo.id, { completed: !todo.completed })
+                    }
                   />
                 </div>
               </div>
