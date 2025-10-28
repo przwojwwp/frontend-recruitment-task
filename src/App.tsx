@@ -1,11 +1,6 @@
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
-
-type Todo = {
-  id: string;
-  title: string;
-  completed: boolean;
-};
+import { getTodos, Todo } from "./api/todos";
 
 const API_URL = `http://localhost:3000`;
 
@@ -14,12 +9,16 @@ export function App() {
   const [title, setTitle] = useState("");
 
   useEffect(() => {
-    async function getTodos() {
-      const response = await fetch(`${API_URL}/todos`);
-      const data = await response.json();
-      setTodos(data);
+    async function fetchTodos() {
+      try {
+        const data = await getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error("Failed to fetch todos", error);
+      }
     }
-    getTodos();
+
+    fetchTodos();
   }, []);
 
   const addTodo = async (e: React.FormEvent) => {
