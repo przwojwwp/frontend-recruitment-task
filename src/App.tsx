@@ -71,6 +71,22 @@ export function App() {
     }
   };
 
+  const deleteCompletedTodos = async () => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+
+    try {
+      await Promise.all(
+        completedTodos.map((todo) =>
+          fetch(`${API_URL}/todos/${todo.id}`, { method: "DELETE" }),
+        ),
+      );
+
+      setTodos((prev) => prev.filter((todo) => !todo.completed));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-4">
       <form onSubmit={addTodo}>
@@ -129,7 +145,10 @@ export function App() {
         >
           {todos.filter((todo) => !todo.completed).length} items left
         </span>
-        <button className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        <button
+          onClick={deleteCompletedTodos}
+          className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        >
           Clear completed
         </button>
       </div>
