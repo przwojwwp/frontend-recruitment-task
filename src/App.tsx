@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { useEffect, useState } from "react";
 
 type Todo = {
   id: number;
@@ -9,6 +10,19 @@ type Todo = {
 const API_URL = `http://localhost:3000`;
 
 export function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    async function fetchTodos() {
+      const response = await fetch(`${API_URL}/todos`);
+      const data = await response.json();
+      setTodos(data);
+    }
+    fetchTodos();
+  }, []);
+
+  
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-4">
       <div>
