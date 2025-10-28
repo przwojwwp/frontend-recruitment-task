@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
-import { getTodos, Todo } from "./api/todos";
+import { getTodos, Todo, addTodo } from "./api/todos";
 
 const API_URL = `http://localhost:3000`;
 
@@ -21,33 +21,16 @@ export function App() {
     fetchTodos();
   }, []);
 
-  const addTodo = async (e: React.FormEvent) => {
+  const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const newTodo = {
-      title: title.trim(),
-      completed: false,
-    };
-
     try {
-      const res = await fetch(`${API_URL}/todos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newTodo),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to add todo");
-      }
-
-      const createdTodo = await res.json();
-      setTodos((prevTodos) => [...prevTodos, createdTodo]);
+      const newTodo = await addTodo(title.trim());
+      setTodos((prevTodos) => [...prevTodos, newTodo]);
       setTitle("");
     } catch (error) {
-      console.error(error);
+      console.error("Failed to add todo", error);
     }
   };
 
@@ -88,7 +71,7 @@ export function App() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-4">
-      <form onSubmit={addTodo}>
+      <form onSubmit={handleAddTodo}>
         <input
           placeholder="What needs to be done?"
           type="text"
