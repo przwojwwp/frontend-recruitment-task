@@ -147,7 +147,10 @@ export function App() {
         </span>
         <button
           onClick={deleteCompletedTodos}
-          className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className={clsx(
+            "rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
+            todos.every((todo) => !todo.completed) && "hidden",
+          )}
         >
           Clear completed
         </button>
